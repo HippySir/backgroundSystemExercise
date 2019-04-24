@@ -10,7 +10,8 @@ Vue.use(ElementUI)
 import axios from './assets/js/http.js'
 Vue.use(axios)
 
-
+// 导入公共样式文件
+import './assets/css/main.less'
 
 //导入路由
 import router from './router'

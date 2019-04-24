@@ -2,11 +2,11 @@
   <div class="login">
     <div class="loginbox">
       <p>用户登陆</p>
-      <el-form label-position="top" :model="formLogin">
-        <el-form-item label="用户名">
+      <el-form label-position="top" :model="formLogin" :rules="rules" ref="formLogin">
+        <el-form-item label="用户名" prop="userName">
           <el-input v-model="formLogin.userName"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密码" prop="passWord">
           <el-input v-model="formLogin.passWord"></el-input>
         </el-form-item>
         <el-form-item>
@@ -25,20 +25,35 @@ export default {
         userName: "",
         passWord: ""
       },
-      
+      rules: {
+        userName: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+        ],
+        passWord: [{ required: true, message: "请输入密码", trigger: "blur" }]
+      }
     };
   },
   methods: {
-    //   用户点击登陆所触发的函数
-   async submitForm(formName) {
-       let res = await this.$axios.post('login',{
-         username: this.formLogin.userName,
-         passWord: this.formLogin.passWord
-       });
-      console.log(res);
-      if(res.data.meta === '登陆成功'){
-          this.$router.push({ path: 'home' })
-      }
+    submitForm(formName) {
+      this.$refs[formName].validate(async valid => {
+        if (valid) {
+          let res = await this.$axios.post("login", {
+            username: this.formLogin.userName,
+            passWord: this.formLogin.passWord
+          });
+          console.log(res);
+          if (res.data.meta === "登陆成功") {
+            this.$router.push({ path: "home" });
+          }
+        } else {
+          this.$message({
+            message: "用户名或者密码输入不正确，请重新输入！",
+            type: "warning"
+          });
+          return false;
+        }
+      });
     }
   }
 };
