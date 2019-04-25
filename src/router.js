@@ -29,7 +29,7 @@ let routes = [
     component: index,
     children:[
       {
-        path: '',
+        path: 'users',
         component: users,
       },
       {

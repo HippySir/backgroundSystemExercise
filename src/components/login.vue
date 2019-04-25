@@ -49,7 +49,7 @@ export default {
             let afterToken = res.data.data.token;
             sessionStorage.setItem('token',afterToken);
             // 跳转到后台首页
-            this.$router.push({ path: "/" });
+            this.$router.push({ path: "/users" });
           } else {
                this.$message.error('用户名或密码格式不正确！');
           }

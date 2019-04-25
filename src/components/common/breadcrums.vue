@@ -1,5 +1,5 @@
 <template>
-  <el-breadcrumb separator-class="el-icon-arrow-right">
+  <el-breadcrumb separator-class="el-icon-arrow-right" >
     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
     <el-breadcrumb-item>{{itema}}</el-breadcrumb-item>
     <el-breadcrumb-item>{{itemb}}</el-breadcrumb-item>
@@ -17,5 +17,6 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less">
+    
 </style>
