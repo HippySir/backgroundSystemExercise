@@ -16,6 +16,9 @@ import './assets/css/main.less'
 //导入路由
 import router from './router'
 
+// 将面包屑导航栏注册成为全局组件
+import breadcrums from './components/common/breadcrums.vue'
+Vue.component('breadcrums',breadcrums)
 
 Vue.config.productionTip = false
 

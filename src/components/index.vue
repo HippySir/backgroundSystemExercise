@@ -79,7 +79,9 @@
           </el-row>
         </el-aside>
         <!-- 右侧 -->
-        <el-main class="main">Main</el-main>
+        <el-main class="main">
+          <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -119,9 +121,13 @@ export default {};
       .aside {
         width: "200px";
         background-color: red;
+        padding: 0;
       }
       .main {
+          padding: 0 20px;
+          background-color: #e9eef3;
       }
+    
     }
   }
 }

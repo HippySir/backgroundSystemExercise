@@ -6,9 +6,10 @@ Vue.use(VueRouter);
 
 // 导入相关组件
 // 导入组件
-import login from "./components/login.vue" //登陆页
-import index from "./components/index.vue" //首页
-import error from "./components/error.vue"  
+import login from "./components/login.vue"            //登陆页
+import index from "./components/index.vue"            //首页
+import error from "./components/error.vue"            //错误页面
+import users from "./components/users.vue"            //用户管理页
 let routes = [
   {
     path: "/login",
@@ -16,7 +17,13 @@ let routes = [
   },
   {
     path: "/",
-    component: index
+    component: index,
+    children:[
+      {
+        path: '',
+        component: users,
+      }
+    ]
   },
   {
     path: "/error",
