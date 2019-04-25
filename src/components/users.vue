@@ -17,12 +17,22 @@
         <!-- 表格 -->
         <el-table :data="userdata.users" style="width: 100%" border>
           <el-table-column type="index" width="50"></el-table-column>
-          <el-table-column prop="username" label="姓名" width="250"></el-table-column>
-          <el-table-column prop="email" label="邮箱" width="250"></el-table-column>
-          <el-table-column prop="mobile" label="电话" width="250"></el-table-column>
-          <el-table-column label="用户状态" width="100">
-            <template  slot-scope="scope">
-              <el-switch active-color="#13ce66" inactive-color="#ff4949" v-model="scope.row.mg_state" @change="userState(scope.row.mg_state,scope.row.id)"></el-switch>
+          <el-table-column prop="username" label="姓名" width="200"></el-table-column>
+          <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
+          <el-table-column prop="mobile" label="电话" width="200"></el-table-column>
+          <el-table-column label="创建时间" width="200">
+              <template slot-scope="scope">
+                  {{scope.row.create_time | timeDisposal}}
+            </template>
+          </el-table-column>
+          <el-table-column label="用户状态"  width="100">
+            <template slot-scope="scope">
+              <el-switch
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                v-model="scope.row.mg_state"
+                @change="userState(scope.row.mg_state,scope.row.id)"
+              ></el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作">
@@ -57,23 +67,22 @@ export default {
     return {
       userdata: {},
       pagenum: 1,
-      pagesize: 5,
-      
+      pagesize: 5
     };
   },
   methods: {
     handleEdit() {},
     handleDelete() {},
-    
+
     // 分页器相关函数
     handleSizeChange(val) {
-        this.pagesize = val
-        this.getUserData(this.pagenum,val)
-      console.log(`每页 ${val} 条`)
+      this.pagesize = val;
+      this.getUserData(this.pagenum, val);
+      console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-        this.pagenum = val;
-        this.getUserData()
+      this.pagenum = val;
+      this.getUserData();
     },
 
     // 用户获取请求数据的函数
@@ -89,16 +98,14 @@ export default {
     },
 
     // 用户状态改变的函数
-   async userState (res,reas) {
-        console.log(res);
-      let rea = await this.$axios.put(`users/${reas}/state/${res}`
-        
-      );
+    async userState(res, reas) {
+      console.log(res);
+      let rea = await this.$axios.put(`users/${reas}/state/${res}`);
       console.log(rea);
     }
   },
   created() {
-       this.getUserData();
+    this.getUserData();
   }
 };
 </script>

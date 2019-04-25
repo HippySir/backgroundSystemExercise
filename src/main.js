@@ -20,6 +20,14 @@ import router from './router'
 import breadcrums from './components/common/breadcrums.vue'
 Vue.component('breadcrums',breadcrums)
 
+// 设置全局的过滤器
+// 处理时间格式的过滤器
+import moment from 'moment'
+Vue.filter('timeDisposal', function (value) {
+  if (!value) return ''
+  return moment(value).format('YYYY-MM-DDTHH:mm:ss');
+})
+
 Vue.config.productionTip = false
 
 
