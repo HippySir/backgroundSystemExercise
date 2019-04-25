@@ -40,7 +40,8 @@ export default {
         if (valid) {
           let res = await this.$axios.post("login", {
             username: this.formLogin.userName,
-            password: this.formLogin.passWord
+            password: this.formLogin.passWord,
+            islogin: true
           });
           console.log(res);
           if (res.data.meta.msg === "登录成功") {

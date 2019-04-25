@@ -21,8 +21,8 @@
           <el-table-column prop="email" label="邮箱" width="250"></el-table-column>
           <el-table-column prop="mobile" label="电话" width="250"></el-table-column>
           <el-table-column label="用户状态" width="100">
-            <template>
-              <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+            <template  slot-scope="scope">
+              <el-switch active-color="#13ce66" inactive-color="#ff4949" v-model="scope.row.mg_state" @change="userState(scope.row.mg_state,scope.row.id)"></el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作">
@@ -57,12 +57,14 @@ export default {
     return {
       userdata: {},
       pagenum: 1,
-      pagesize: 5
+      pagesize: 5,
+      
     };
   },
   methods: {
     handleEdit() {},
     handleDelete() {},
+    
     // 分页器相关函数
     handleSizeChange(val) {
         this.pagesize = val
@@ -73,22 +75,30 @@ export default {
         this.pagenum = val;
         this.getUserData()
     },
+
+    // 用户获取请求数据的函数
     async getUserData() {
       let userdata = await this.$axios.get("users", {
         params: {
           pagenum: this.pagenum,
           pagesize: this.pagesize
-        },
-        headers: {
-          Authorization: sessionStorage.getItem("token")
         }
       });
       console.log(userdata);
       this.userdata = userdata.data.data;
+    },
+
+    // 用户状态改变的函数
+   async userState (res,reas) {
+        console.log(res);
+      let rea = await this.$axios.put(`users/${reas}/state/${res}`
+        
+      );
+      console.log(rea);
     }
   },
   created() {
-       this.getUserData(this.pagenum,this.pagesize);
+       this.getUserData();
   }
 };
 </script>
