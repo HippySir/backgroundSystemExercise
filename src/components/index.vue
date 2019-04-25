@@ -95,9 +95,12 @@ export default {
   methods: {
     // 退出功能的函数
     dropout(){
-      console.log('ha')
       sessionStorage.removeItem('token')
       this.$router.push('login');
+       this.$message({
+          message: '退出登陆成功！',
+          type: 'success'
+        });
     }
   },
   created() {
