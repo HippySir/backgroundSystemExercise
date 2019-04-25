@@ -11,7 +11,7 @@
             <div class="titleWord">电商管理系统</div>
           </el-col>
           <el-col :span="8" class="line">
-            <div class="quit">退出</div>
+            <el-button class="quit" @click="dropout">退出</el-button>
           </el-col>
         </el-row>
       </el-header>
@@ -38,7 +38,7 @@
                 <el-menu-item-group>
                   <el-menu-item index="1-2" class="el-icon-menu">角色列表</el-menu-item>
                 </el-menu-item-group>
-                  <el-menu-item-group>
+                <el-menu-item-group>
                   <el-menu-item index="1-2" class="el-icon-menu">权限管理</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
@@ -50,10 +50,10 @@
                 <el-menu-item-group>
                   <el-menu-item index="1-2" class="el-icon-menu">商品列表</el-menu-item>
                 </el-menu-item-group>
-                 <el-menu-item-group>
+                <el-menu-item-group>
                   <el-menu-item index="1-2" class="el-icon-menu">分类参数</el-menu-item>
                 </el-menu-item-group>
-                 <el-menu-item-group>
+                <el-menu-item-group>
                   <el-menu-item index="1-2" class="el-icon-menu">商品分类</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
@@ -88,7 +88,28 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {}
+  },
+  methods: {
+    // 退出功能的函数
+    dropout(){
+      console.log('ha')
+      sessionStorage.removeItem('token')
+      this.$router.push('login');
+    }
+  },
+  created() {
+    // 在这里验证浏览器有没有token
+    if (!sessionStorage.getItem("token")) {
+      console.log("123456");
+      // this.$router.push('login');
+      this.$router.push({path:'/login'});
+      this.$message.error('请先登录！');
+    }
+  }
+};
 </script>
 
 <style lang="less" scope>
@@ -100,6 +121,7 @@ export default {};
       background-color: #b3c0d1;
       .line {
         height: 60px;
+        line-height: 60px;
       }
       img {
       }
@@ -112,8 +134,7 @@ export default {};
         font-size: 20px;
       }
       .quit {
-        height: 60px;
-        line-height: 60px;
+        margin-top: 10px;
         float: right;
       }
     }
@@ -124,10 +145,9 @@ export default {};
         padding: 0;
       }
       .main {
-          padding: 0 20px;
-          background-color: #e9eef3;
+        padding: 0 20px;
+        background-color: #e9eef3;
       }
-    
     }
   }
 }

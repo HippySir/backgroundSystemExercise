@@ -40,11 +40,18 @@ export default {
         if (valid) {
           let res = await this.$axios.post("login", {
             username: this.formLogin.userName,
-            passWord: this.formLogin.passWord
+            password: this.formLogin.passWord
           });
           console.log(res);
-          if (res.data.meta === "登陆成功") {
-            this.$router.push({ path: "home" });
+          if (res.data.meta.msg === "登录成功") {
+            console.log('123');
+            // 将后台返回回来的token给存起来
+            let afterToken = res.data.data.token;
+            sessionStorage.setItem('token',afterToken);
+            // 跳转到后台首页
+            this.$router.push({ path: "/" });
+          } else {
+               this.$message.error('用户名或密码格式不正确！');
           }
         } else {
           this.$message({

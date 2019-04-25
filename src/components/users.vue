@@ -9,7 +9,7 @@
       <el-main class="usermain">
         <!-- 搜索框 -->
         <div class="searchbox">
-          <el-input placeholder="请输入内容" v-model="input3" class="input-with-select">
+          <el-input placeholder="请输入内容"  class="input-with-select">
             <el-button slot="append" icon="el-icon-search"></el-button>
           </el-input>
           <el-button type="success" plain>添加用户</el-button>
