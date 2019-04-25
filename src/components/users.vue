@@ -9,10 +9,10 @@
       <el-main class="usermain">
         <!-- 搜索框 -->
         <div class="searchbox">
-          <el-input placeholder="请输入内容" class="input-with-select">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-input placeholder="请输入内容" class="input-with-select" v-model="inputContent">
+            <el-button slot="append" icon="el-icon-search" @click="searchUsers"></el-button>
           </el-input>
-          <el-button type="success" plain>添加用户</el-button>
+          <el-button type="success" plain @click="addDialog = true">添加用户</el-button>
         </div>
         <!-- 表格 -->
         <el-table :data="userdata.users" style="width: 100%" border>
@@ -21,11 +21,9 @@
           <el-table-column prop="email" label="邮箱" width="200"></el-table-column>
           <el-table-column prop="mobile" label="电话" width="200"></el-table-column>
           <el-table-column label="创建时间" width="200">
-              <template slot-scope="scope">
-                  {{scope.row.create_time | timeDisposal}}
-            </template>
+            <template slot-scope="scope">{{scope.row.create_time | timeDisposal}}</template>
           </el-table-column>
-          <el-table-column label="用户状态"  width="100">
+          <el-table-column label="用户状态" width="100">
             <template slot-scope="scope">
               <el-switch
                 active-color="#13ce66"
@@ -58,6 +56,27 @@
         ></el-pagination>
       </el-footer>
     </el-container>
+    <!-- 添加用户的弹框 -->
+    <el-dialog title="添加用户" :visible.sync="addDialog">
+      <el-form :model="addForm" :rules="addRules" ref="addForm">
+        <el-form-item label="用户名" label-width="120px" prop="username">
+          <el-input v-model="addForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" label-width="120px" prop="password">
+          <el-input v-model="addForm.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" label-width="120px">
+          <el-input v-model="addForm.mailbox" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" label-width="120px">
+          <el-input v-model="addForm.telephone" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addDialog = false">取 消</el-button>
+        <el-button type="primary" @click="addDialog = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -65,9 +84,29 @@
 export default {
   data() {
     return {
+      inputContent: "",
       userdata: {},
       pagenum: 1,
-      pagesize: 5
+      pagesize: 5,
+      addDialog: false, //新增用户的显示框的按钮
+      addForm: {
+        username: "",
+        password: "",
+        mailbox: "",
+        telephone: ""
+      },
+      addRules: {
+        //新增用户的验证规则
+        username: [
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+          { required: true, message: "用户名不能为空", trigger: "blur" }
+         
+        ],
+        password: [
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+          { required: true, message: "请输入密码", trigger: "blur" },
+        ]
+      }
     };
   },
   methods: {
@@ -90,11 +129,18 @@ export default {
       let userdata = await this.$axios.get("users", {
         params: {
           pagenum: this.pagenum,
-          pagesize: this.pagesize
+          pagesize: this.pagesize,
+          query: this.inputContent
         }
       });
       console.log(userdata);
       this.userdata = userdata.data.data;
+      if (userdata.data.data.total === 0) {
+        this.$message({
+          message: "没有相关的用户！",
+          type: "warning"
+        });
+      }
     },
 
     // 用户状态改变的函数
@@ -102,8 +148,16 @@ export default {
       console.log(res);
       let rea = await this.$axios.put(`users/${reas}/state/${res}`);
       console.log(rea);
+    },
+
+    // 搜索用户的函数
+    searchUsers() {
+      if (this.query != "") {
+        this.getUserData();
+      }
     }
   },
+
   created() {
     this.getUserData();
   }
