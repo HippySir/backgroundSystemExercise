@@ -20,14 +20,14 @@
         <!-- 左侧 -->
         <el-aside class="aside">
           <el-row class="tac">
-            <el-menu default-active="2" class="el-menu-vertical-demo">
+            <el-menu default-active="2" class="el-menu-vertical-demo" router>
               <el-submenu index="1">
                 <template slot="title">
                   <i class="el-icon-location"></i>
                   <span>用户管理</span>
                 </template>
                 <el-menu-item-group>
-                  <el-menu-item index="1-2" class="el-icon-menu">用户列表</el-menu-item>
+                  <el-menu-item index="" class="el-icon-menu">用户列表</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
               <el-submenu index="1">
@@ -36,10 +36,10 @@
                   <span>权限管理</span>
                 </template>
                 <el-menu-item-group>
-                  <el-menu-item index="1-2" class="el-icon-menu">角色列表</el-menu-item>
+                  <el-menu-item index="rolelist" class="el-icon-menu">角色列表</el-menu-item>
                 </el-menu-item-group>
                 <el-menu-item-group>
-                  <el-menu-item index="1-2" class="el-icon-menu">权限管理</el-menu-item>
+                  <el-menu-item index="permission" class="el-icon-menu">权限管理</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
               <el-submenu index="1">
@@ -48,13 +48,13 @@
                   <span>商品管理</span>
                 </template>
                 <el-menu-item-group>
-                  <el-menu-item index="1-2" class="el-icon-menu">商品列表</el-menu-item>
+                  <el-menu-item index="goodslist" class="el-icon-menu">商品列表</el-menu-item>
                 </el-menu-item-group>
                 <el-menu-item-group>
-                  <el-menu-item index="1-2" class="el-icon-menu">分类参数</el-menu-item>
+                  <el-menu-item index="category" class="el-icon-menu">分类参数</el-menu-item>
                 </el-menu-item-group>
                 <el-menu-item-group>
-                  <el-menu-item index="1-2" class="el-icon-menu">商品分类</el-menu-item>
+                  <el-menu-item index="goodscategoru" class="el-icon-menu">商品分类</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
               <el-submenu index="1">
@@ -63,7 +63,7 @@
                   <span>订单管理</span>
                 </template>
                 <el-menu-item-group>
-                  <el-menu-item index="1-2" class="el-icon-menu">订单列表</el-menu-item>
+                  <el-menu-item index="orderlist" class="el-icon-menu">订单列表</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
               <el-submenu index="1">
@@ -72,7 +72,7 @@
                   <span>数据统计</span>
                 </template>
                 <el-menu-item-group>
-                  <el-menu-item index="1-2" class="el-icon-menu">数据报表</el-menu-item>
+                  <el-menu-item index="datalist" class="el-icon-menu">数据报表</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
             </el-menu>
