@@ -34,8 +34,13 @@
             </template>
           </el-table-column>
           <el-table-column label="操作">
-            <template>
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+            <template slot-scope="scope">
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                size="mini"
+                @click="editUsera(scope.row)"
+              ></el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
               <el-button type="success" icon="el-icon-check" size="mini"></el-button>
             </template>
@@ -77,6 +82,24 @@
         <el-button type="primary" @click="addUsers('addForm')">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 编辑用户功能的提交 -->
+    <el-dialog title="修改用户" :visible.sync="editUser">
+      <el-form :model="editForm" :rules="editRules" ref="editForm">
+        <el-form-item label="用户名" label-width="120px" prop="username">
+          <el-input v-model="editForm.username" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" label-width="120px">
+          <el-input v-model="editForm.mailbox " autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" label-width="120px">
+          <el-input v-model="editForm.telephone" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editUser = false">取 消</el-button>
+        <el-button type="primary" @click="editUsers()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -88,7 +111,7 @@ export default {
       userdata: {},
       pagenum: 1,
       pagesize: 5,
-      addDialog: false, //新增用户的显示框的按钮
+      addDialog: false, //新增用户的相关数据
       addForm: {
         username: "",
         password: "",
@@ -105,7 +128,17 @@ export default {
           { required: true, message: "请输入密码", trigger: "blur" },
           { min: 3, max: 16, message: "长度在 3 到 16 个字符", trigger: "blur" }
         ]
-      }
+      },
+      editUser: false, //编辑用户的相关数据
+      editForm: {
+        username: "",
+        mailbox: "",
+        telephone: ""
+      },
+      editRules: {
+        username: [{ required: true }]
+      },
+      userData: {}
     };
   },
   methods: {
@@ -183,11 +216,36 @@ export default {
           });
         }
       });
+    },
+
+    //编辑用户的相关函数
+    editUsera(res) {
+      this.editUser = true;
+      this.editForm.username = res.username;
+      this.userData = res;
+    },
+    async editUsers() {
+      let res = await this.$axios.put(`users/${this.userData.id}`, {
+        email: this.editForm.mailbox,
+        mobile: this.editForm.telephone
+      });
+      this.editUser = false;  //不管更新成功与否都要关闭弹框
+      if (res.data.meta.msg === "更新成功") {
+        this.$message({
+          message: "更新成功！",
+          type: "success"
+        });
+        this.getUserData();
+      } else {
+        this.$message({
+          message: res.data.meta.msg,
+          type: "warning"
+        });
+      }
     }
   },
 
   created() {
-    console.log(123456);
     this.getUserData();
   }
 };
