@@ -41,8 +41,13 @@
                 size="mini"
                 @click="editUsera(scope.row)"
               ></el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
-              <el-button type="success" icon="el-icon-check" size="mini"></el-button>
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                size="mini"
+                @click="deleteUserb(scope.row)"
+              ></el-button>
+              <el-button type="success" icon="el-icon-check" size="mini" @click="slectRole(scope.row)"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -100,6 +105,31 @@
         <el-button type="primary" @click="editUsers()">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 删除用户的弹出框 -->
+    <el-dialog title="提示" :visible.sync="deleteUser" width="30%">
+      <span class="el-icon-warning">是否删除该用户?</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteUser = false">取 消</el-button>
+        <el-button type="primary" @click="deleteUsers">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 为用户选定角色的对话框 -->
+    <el-dialog title="分配角色" :visible.sync="allocateroles">
+      <el-form :model="usersDataa">
+        <el-form-item label="当前用户" label-width="120px">
+         {{usersDataa.username}}
+        </el-form-item>
+        <el-form-item label="请选择角色" label-width="120px">
+          <el-select v-model="usersDataa.role_name" placeholder="请选择活动区域">
+            <el-option v-for="(item,index) in roleName" :key="index" :label="item.roleName" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="allocateroles = false">取 消</el-button>
+        <el-button type="primary" @click="choiceRole">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -138,7 +168,14 @@ export default {
       editRules: {
         username: [{ required: true }]
       },
-      userData: {}
+      usersDataa: {},
+      deleteUser: false, //删除用户的相关数据
+      allocateroles: false, //为用户选定相关角色的相关的数据
+      roleForm: {
+        username: '',
+        region: '',
+      },
+      roleName: [],
     };
   },
   methods: {
@@ -158,16 +195,16 @@ export default {
 
     // 用户获取请求数据的函数
     async getUserData() {
-      let userdata = await this.$axios.get("users", {
+      let res = await this.$axios.get("users", {
         params: {
           pagenum: this.pagenum,
           pagesize: this.pagesize,
           query: this.inputContent
         }
       });
-      console.log(userdata);
-      this.userdata = userdata.data.data;
-      if (userdata.data.data.total === 0) {
+      console.log(res);
+      this.userdata = res.data.data;
+      if (res.data.data.total === 0) {
         this.$message({
           message: "没有相关的用户！",
           type: "warning"
@@ -222,14 +259,14 @@ export default {
     editUsera(res) {
       this.editUser = true;
       this.editForm.username = res.username;
-      this.userData = res;
+      this.usersDataa = res;
     },
     async editUsers() {
-      let res = await this.$axios.put(`users/${this.userData.id}`, {
+      let res = await this.$axios.put(`users/${this.usersDataa.id}`, {
         email: this.editForm.mailbox,
         mobile: this.editForm.telephone
       });
-      this.editUser = false;  //不管更新成功与否都要关闭弹框
+      this.editUser = false; //不管更新成功与否都要关闭弹框
       if (res.data.meta.msg === "更新成功") {
         this.$message({
           message: "更新成功！",
@@ -242,6 +279,56 @@ export default {
           type: "warning"
         });
       }
+    },
+
+    // 删除用户的相关的函数
+    async deleteUsers() {
+      this.deleteUser = false;
+      let res = await this.$axios.delete(`users/${this.usersDataa.id}`);
+      if (res.data.meta.msg === "删除成功") {
+        this.getUserData();
+        this.$message({
+          message: "删除成功！",
+          type: "success"
+        });
+      } else {
+        this.$message({
+          message: res.data.meta.msg,
+          type: "warning"
+        });
+      }
+      console.log(res);
+    },
+    deleteUserb(res) {
+      this.usersDataa = res;
+      this.deleteUser = true;
+    },
+    // 为用户选定相关角色的相关函数
+   async slectRole (res) {
+      console.log(res);
+      this.allocateroles = true;
+      this.usersDataa = res;
+      let rea = await this.$axios.get('roles');
+      console.log(rea);
+      this.roleName = rea.data.data;
+    },
+   async choiceRole () {
+      this.allocateroles = false;
+     let res = await this.$axios.put(`users/${this.usersDataa.id}/role`,
+      {rid: this.usersDataa.role_name});
+      if(res.data.meta.msg === '设置角色成功'){
+        this.getUserData();
+        this.$message({
+          message: "修改成功！",
+          type: "success"
+        });
+      }else{
+         this.$message({
+          message: "修改失败！",
+          type: "success"
+        });
+      }
+
     }
   },
 
