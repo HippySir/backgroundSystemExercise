@@ -74,7 +74,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addDialog = false">取 消</el-button>
-        <el-button type="primary" @click="addDialog = false">确 定</el-button>
+        <el-button type="primary" @click="addUsers('addForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -98,13 +98,12 @@ export default {
       addRules: {
         //新增用户的验证规则
         username: [
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
-          { required: true, message: "用户名不能为空", trigger: "blur" }
-         
+          { required: true, message: "用户名不能为空", trigger: "blur" },
+          { min: 3, max: 16, message: "长度在 3 到 16 个字符", trigger: "blur" }
         ],
         password: [
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
           { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 3, max: 16, message: "长度在 3 到 16 个字符", trigger: "blur" }
         ]
       }
     };
@@ -155,10 +154,40 @@ export default {
       if (this.query != "") {
         this.getUserData();
       }
+    },
+
+    // 添加用户的相关函数
+    addUsers(formName) {
+      this.$refs[formName].validate(async valid => {
+        if (valid) {
+          let res = await this.$axios.post("users", {
+            username: this.addForm.username,
+            password: this.addForm.password,
+            email: this.addForm.mailbox,
+            mobile: this.addForm.telephone
+          });
+          this.addDialog = false;
+          this.$message({
+            message: res.data.meta.msg,
+            type: "warning"
+          });
+          // 如果创建成功就刷新页面
+          if (res.data.meta.msg === "创建成功") {
+            this.getUserData();
+          }
+          console.log(res);
+        } else {
+          this.$message({
+            message: "请安要求正确输入相关信息！",
+            type: "warning"
+          });
+        }
+      });
     }
   },
 
   created() {
+    console.log(123456);
     this.getUserData();
   }
 };
