@@ -33,31 +33,31 @@ let routes = [
         component: users,
       },
       {
-        path: 'goodslist',
+        path: 'goods',
         component: goodslist,
       },
       {
-        path: 'category',
+        path: 'params',
         component: category,
       },
       {
-        path: 'goodscategoru',
+        path: 'categories',
         component: goodscategoru,
       },
       {
-        path: 'orderlist',
+        path: 'orders',
         component: orderlist,
       },
       {
-        path: 'datalist',
+        path: 'reports',
         component: datalist,
       },
       {
-        path: 'rolelist',
+        path: 'roles',
         component: rolelist,
       },
       {
-        path: 'permission',
+        path: 'rights',
         component: permission,
       },
 

@@ -20,61 +20,17 @@
         <!-- 左侧 -->
         <el-aside class="aside">
           <el-row class="tac">
-            <el-menu default-active="2" class="el-menu-vertical-demo" router>
-              <el-submenu index="1">
+            <el-menu default-active="users" class="el-menu-vertical-demo" router>
+              <el-submenu :index="index + ''" v-for="(item,index) in listPermission" :key="index">
                 <template slot="title">
                   <i class="el-icon-location"></i>
-                  <span>用户管理</span>
+                  <span>{{item.authName}}</span>
                 </template>
-                <el-menu-item-group>
-                  <el-menu-item index="users" class="el-icon-menu">用户列表</el-menu-item>
+                <el-menu-item-group v-for="(itema,indexa) in item.children" :key="indexa">
+                  <el-menu-item :index="itema.path" class="el-icon-menu">{{itema.authName}}</el-menu-item>
                 </el-menu-item-group>
               </el-submenu>
-              <el-submenu index="1">
-                <template slot="title">
-                  <i class="el-icon-location"></i>
-                  <span>权限管理</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="rolelist" class="el-icon-menu">角色列表</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group>
-                  <el-menu-item index="permission" class="el-icon-menu">权限管理</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-              <el-submenu index="1">
-                <template slot="title">
-                  <i class="el-icon-location"></i>
-                  <span>商品管理</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="goodslist" class="el-icon-menu">商品列表</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group>
-                  <el-menu-item index="category" class="el-icon-menu">分类参数</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group>
-                  <el-menu-item index="goodscategoru" class="el-icon-menu">商品分类</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-              <el-submenu index="1">
-                <template slot="title">
-                  <i class="el-icon-location"></i>
-                  <span>订单管理</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="orderlist" class="el-icon-menu">订单列表</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-              <el-submenu index="1">
-                <template slot="title">
-                  <i class="el-icon-location"></i>
-                  <span>数据统计</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="datalist" class="el-icon-menu">数据报表</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
+            
             </el-menu>
           </el-row>
         </el-aside>
@@ -90,7 +46,9 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      listPermission: [],
+    }
   },
   methods: {
     // 退出功能的函数
@@ -103,14 +61,20 @@ export default {
         });
     }
   },
-  created() {
+ async created() {
     // 在这里验证浏览器有没有token
     if (!sessionStorage.getItem("token")) {
-      console.log("123456");
-      // this.$router.push('login');
       this.$router.push({path:'/login'});
       this.$message.error('请先登录！');
+      return false;
+    }else{
+        this.$axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('token');
     }
+
+    // 发送请求获取权限列表数据来渲染左侧菜单
+    let res = await this.$axios.get('menus');
+    this.listPermission = res.data.data;
+    console.log(res);
   }
 };
 </script>
