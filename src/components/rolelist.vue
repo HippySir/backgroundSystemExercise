@@ -25,7 +25,7 @@
               @click="editRolesa(scope.row)"
             ></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="isDelete(scope.row)"></el-button>
-            <el-button type="success" icon="el-icon-check" size="mini"></el-button>
+            <el-button type="success" icon="el-icon-check" size="mini" @click="rightDistribution(scope.row)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -68,6 +68,22 @@
         <el-button type="primary" @click="suretoDelete">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 权限编辑的弹出框 -->
+    <el-dialog title="权限分配" :visible.sync="rightsVisible">
+      <el-tree
+        :data="rithtData"
+        show-checkbox
+        node-key="id"
+        :default-expanded-keys="[2, 3]"
+        :default-checked-keys="[5]"
+        :props="defaultProps"
+        default-expand-all
+      ></el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="rightsVisible = false">取 消</el-button>
+        <el-button type="primary" @click="rightEdit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -96,8 +112,16 @@ export default {
       },
       //编辑角色的相关数据
       editDialog: false,
-      // 删除有关的函数
-      deleteVisible: false
+      // 删除有关的数据
+      deleteVisible: false,
+      // 编辑角色权限的有关数据
+      rithtData: [],
+      defaultProps: {
+        children: "children",
+        label: "authName"
+      },
+      rightsVisible: false,
+    
     };
   },
   created() {
@@ -172,16 +196,27 @@ export default {
         message: "已取消删除！"
       });
     },
-   async suretoDelete() {
-    let res = await this.$axios.delete(`roles/${ this.addForm.id}`);
-    this.deleteVisible = false;
-    this.getMessage();
-    console.log(res);
+    async suretoDelete() {
+      let res = await this.$axios.delete(`roles/${this.addForm.id}`);
+      this.deleteVisible = false;
+      this.getMessage();
+      console.log(res);
     },
     isDelete(res) {
       this.deleteVisible = true;
       this.addForm.id = res.id;
-    }
+    },
+
+    // 权限分配的有关函数
+   async rightDistribution (res) {
+      this.addForm.id = res.id;
+      this.rightsVisible = true;
+     let resa = await this.$axios.get(`rights/tree`);
+     console.log(resa);
+     this.rithtData = resa.data.data;
+
+    },
+    rightEdit () {}
   }
 };
 </script>
