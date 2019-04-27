@@ -10,7 +10,21 @@
       <el-table :data="roleData" style="width: 100%" border>
         <el-table-column type="expand">
           <template slot-scope="scope">
-            <el-tag key="你好呀" type="success">{{你好呀}}</el-tag>
+            <el-row v-for="(item,index) in scope.row.children" :key="index">
+              <el-col :span="4">
+                <el-tag class="numsa" :disable-transitions='true' @close="handleClose(scope.row.children,item,scope.row)" type="warning" closable>{{item.authName}}</el-tag>
+              </el-col>
+              <el-col :span="20">
+                <el-row v-for="(itema,indexa) in item.children" :key="indexa">
+                  <el-col :span="6">
+                    <el-tag class="numsa" type="info" :disable-transitions='true' @close="handleClose(item.children,itema,scope.row)" closable>{{itema.authName}}</el-tag>
+                  </el-col>
+                  <el-col :span="18">
+                         <el-tag class="numsa" type="success" :disable-transitions='true' closable  @close="handleClose(itema.children,itemc,scope.row)" v-for="(itemc,indexc) in itema.children" :key="indexc">{{itemc.authName}}</el-tag>
+                  </el-col>
+                </el-row>
+              </el-col>
+            </el-row>
           </template>
         </el-table-column>
         <el-table-column type="index" width="50"></el-table-column>
@@ -25,7 +39,12 @@
               @click="editRolesa(scope.row)"
             ></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="isDelete(scope.row)"></el-button>
-            <el-button type="success" icon="el-icon-check" size="mini" @click="rightDistribution(scope.row)"></el-button>
+            <el-button
+              type="success"
+              icon="el-icon-check"
+              size="mini"
+              @click="rightDistribution(scope.row)"
+            ></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,11 +90,11 @@
     <!-- 权限编辑的弹出框 -->
     <el-dialog title="权限分配" :visible.sync="rightsVisible">
       <el-tree
+        ref="tree"
         :data="rithtData"
         show-checkbox
         node-key="id"
-        :default-expanded-keys="[2, 3]"
-        :default-checked-keys="[5]"
+        :default-checked-keys="selectedRight"
         :props="defaultProps"
         default-expand-all
       ></el-tree>
@@ -121,7 +140,7 @@ export default {
         label: "authName"
       },
       rightsVisible: false,
-    
+      selectedRight: []
     };
   },
   created() {
@@ -129,6 +148,13 @@ export default {
     this.getMessage();
   },
   methods: {
+   async handleClose (res,rea,red) {
+     console.log(red);
+      res.splice(res.indexOf(rea), 1);
+     let reb = await this.$axios.delete(`roles/${red.id}/rights/${rea.id}`);
+     console.log(reb);
+     
+    },
     // 获取角色的信息的函数
     async getMessage() {
       let res = await this.$axios.get("roles");
@@ -195,6 +221,7 @@ export default {
         showClose: true,
         message: "已取消删除！"
       });
+      this.deleteVisible = false;
     },
     async suretoDelete() {
       let res = await this.$axios.delete(`roles/${this.addForm.id}`);
@@ -208,15 +235,44 @@ export default {
     },
 
     // 权限分配的有关函数
-   async rightDistribution (res) {
+    async rightDistribution(res) {
+      console.log(res);
+      this.selectedRight = [];
       this.addForm.id = res.id;
       this.rightsVisible = true;
-     let resa = await this.$axios.get(`rights/tree`);
-     console.log(resa);
-     this.rithtData = resa.data.data;
-
+      let resa = await this.$axios.get(`rights/tree`);
+      console.log(resa);
+      this.rithtData = resa.data.data;
+      this.detalWith(res);
+      console.log(this.selectedRight);
     },
-    rightEdit () {}
+    async rightEdit() {
+      //  console.log(this.selectedRight);
+      console.log(this.$refs.tree.getCheckedKeys());
+      var str = this.$refs.tree.getCheckedKeys().join(",");
+      console.log(str);
+      let resb = await this.$axios.post(`roles/${this.addForm.id}/rights`, {
+        rids: str
+      });
+      if (resb.data.meta.msg === "更新成功") {
+        // console.log('你好吗！');
+        this.getMessage();
+      }
+      // console.log(resb);
+      this.rightsVisible = false;
+    },
+    // 设置递归函数用来处理每个角色的权限
+    detalWith(res) {
+      if (res.children) {
+        res.children.forEach(v => {
+          if (v.children) {
+            this.detalWith(v);
+          } else {
+            this.selectedRight.push(v.id);
+          }
+        });
+      }
+    }
   }
 };
 </script>
@@ -232,6 +288,10 @@ export default {
     padding-left: 20px;
   }
   .addbutton {
+  }
+
+  .numsa {
+    margin: 10px;
   }
 }
 </style>
