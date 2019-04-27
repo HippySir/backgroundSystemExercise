@@ -108,10 +108,14 @@ export default {
     .container {
       .aside {
         width: "200px";
+        height: 100%;
+        overflow: auto;
         background-color: red;
         padding: 0;
       }
       .main {
+        height: 100%;
+        overflow: auto;
         padding: 0 20px;
         background-color: #e9eef3;
       }
