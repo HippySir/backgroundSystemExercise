@@ -18,7 +18,12 @@
         <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="editRolesa(scope.row)"
+            ></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
             <el-button type="success" icon="el-icon-check" size="mini"></el-button>
           </template>
@@ -38,6 +43,21 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="addDialog = false">取 消</el-button>
         <el-button type="primary" @click="addRole('addForm')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 编辑角色的弹窗 -->
+    <el-dialog title="编辑角色" :visible.sync="editDialog">
+      <el-form :model="addForm" :rules="addRules" ref="addForm">
+        <el-form-item label="角色名称" label-width="120px" prop="username">
+          <el-input v-model="addForm.username"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" label-width="120px" prop="describe">
+          <el-input v-model="addForm.describe"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editDialog = false">取 消</el-button>
+        <el-button type="primary" @click="editRole('addForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -65,7 +85,9 @@ export default {
           { required: true, message: "请输入角色描述", trigger: "blur" },
           { min: 1, max: 16, message: "长度在 1 到 16 个字符", trigger: "blur" }
         ]
-      }
+      },
+      //编辑角色的相关数据
+      editDialog: false
     };
   },
   created() {
@@ -106,6 +128,31 @@ export default {
           return false;
         }
       });
+    },
+
+    // 编辑角色的函数
+    editRole(res) {
+      this.$refs[res].validate(async valid => {
+        if (valid) {
+          let res = await this.$axios.put(`roles/${ this.addForm.id}`, {
+            roleName: this.addForm.username,
+            roleDesc: this.addForm.describe
+          });
+          this.getMessage();
+          console.log(res);
+        } else {
+          console.log("请按照要求填写数据！");
+          return false;
+        }
+      });
+      this.editDialog = false;
+    },
+    editRolesa(res) {
+      console.log(res);
+      this.editDialog = true;
+      this.addForm.username = res.roleName;
+      this.addForm.describe = res.roleDesc;
+      this.addForm.id = res.id;
     }
   }
 };
