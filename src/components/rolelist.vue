@@ -24,7 +24,7 @@
               size="mini"
               @click="editRolesa(scope.row)"
             ></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="isDelete(scope.row)"></el-button>
             <el-button type="success" icon="el-icon-check" size="mini"></el-button>
           </template>
         </el-table-column>
@@ -60,6 +60,14 @@
         <el-button type="primary" @click="editRole('addForm')">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 删除的弹出框 -->
+    <el-dialog title="提示" :visible.sync="deleteVisible" width="30%">
+      <span class="el-icon-warning">确认删除该角色吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="canleDelete">取 消</el-button>
+        <el-button type="primary" @click="suretoDelete">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -87,7 +95,9 @@ export default {
         ]
       },
       //编辑角色的相关数据
-      editDialog: false
+      editDialog: false,
+      // 删除有关的函数
+      deleteVisible: false
     };
   },
   created() {
@@ -134,7 +144,7 @@ export default {
     editRole(res) {
       this.$refs[res].validate(async valid => {
         if (valid) {
-          let res = await this.$axios.put(`roles/${ this.addForm.id}`, {
+          let res = await this.$axios.put(`roles/${this.addForm.id}`, {
             roleName: this.addForm.username,
             roleDesc: this.addForm.describe
           });
@@ -152,6 +162,24 @@ export default {
       this.editDialog = true;
       this.addForm.username = res.roleName;
       this.addForm.describe = res.roleDesc;
+      this.addForm.id = res.id;
+    },
+
+    // 删除的有关的函数
+    canleDelete() {
+      this.$message({
+        showClose: true,
+        message: "已取消删除！"
+      });
+    },
+   async suretoDelete() {
+    let res = await this.$axios.delete(`roles/${ this.addForm.id}`);
+    this.deleteVisible = false;
+    this.getMessage();
+    console.log(res);
+    },
+    isDelete(res) {
+      this.deleteVisible = true;
       this.addForm.id = res.id;
     }
   }
