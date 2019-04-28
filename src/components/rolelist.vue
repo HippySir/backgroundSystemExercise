@@ -12,15 +12,35 @@
           <template slot-scope="scope">
             <el-row v-for="(item,index) in scope.row.children" :key="index">
               <el-col :span="4">
-                <el-tag class="numsa" :disable-transitions='true' @close="handleClose(scope.row.children,item,scope.row)" type="warning" closable>{{item.authName}}</el-tag>
+                <el-tag
+                  class="numsa"
+                  :disable-transitions="true"
+                  @close="handleClose(scope.row.children,item,scope.row)"
+                  type="warning"
+                  closable
+                >{{item.authName}}</el-tag>
               </el-col>
               <el-col :span="20">
                 <el-row v-for="(itema,indexa) in item.children" :key="indexa">
                   <el-col :span="6">
-                    <el-tag class="numsa" type="info" :disable-transitions='true' @close="handleClose(item.children,itema,scope.row)" closable>{{itema.authName}}</el-tag>
+                    <el-tag
+                      class="numsa"
+                      type="info"
+                      :disable-transitions="true"
+                      @close="handleClose(item.children,itema,scope.row)"
+                      closable
+                    >{{itema.authName}}</el-tag>
                   </el-col>
                   <el-col :span="18">
-                         <el-tag class="numsa" type="success" :disable-transitions='true' closable  @close="handleClose(itema.children,itemc,scope.row)" v-for="(itemc,indexc) in itema.children" :key="indexc">{{itemc.authName}}</el-tag>
+                    <el-tag
+                      class="numsa"
+                      type="success"
+                      :disable-transitions="true"
+                      closable
+                      @close="handleClose(itema.children,itemc,scope.row)"
+                      v-for="(itemc,indexc) in itema.children"
+                      :key="indexc"
+                    >{{itemc.authName}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
@@ -148,12 +168,11 @@ export default {
     this.getMessage();
   },
   methods: {
-   async handleClose (res,rea,red) {
-     console.log(red);
+    async handleClose(res, rea, red) {
+      console.log(red);
       res.splice(res.indexOf(rea), 1);
-     let reb = await this.$axios.delete(`roles/${red.id}/rights/${rea.id}`);
-     console.log(reb);
-     
+      let reb = await this.$axios.delete(`roles/${red.id}/rights/${rea.id}`);
+      console.log(reb);
     },
     // 获取角色的信息的函数
     async getMessage() {
