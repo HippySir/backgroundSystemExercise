@@ -56,11 +56,11 @@
       </el-footer>
     </el-container>
     <!-- 删除用户的弹出框 -->
-    <el-dialog title="提示" :visible.sync="deleteUser" width="30%">
-      <span class="el-icon-warning">是否删除该用户?</span>
+    <el-dialog title="提示" :visible.sync="deleteGoodsa" width="30%">
+      <span class="el-icon-warning">是否删除该商品?</span>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="deleteUser = false">取 消</el-button>
-        <el-button type="primary" @click="deleteUsers">确 定</el-button>
+        <el-button @click="deleteGoodsa = false">取 消</el-button>
+        <el-button type="primary" @click="deleteGoodss">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -73,29 +73,57 @@ export default {
       // 搜索框的相关数据
       inputContent: "",
       // 删除框的相关数据
-      deleteUser: false,
+      deleteGoodsa: false,
       // 商品列表的相关数据
-      goodsdata: []
+      goodsdata: [],
+    //   查询商品的相关数据
+       pagenum: 1,
+       pagesize: 10,
+    //存储相关商品的信息
+      goodsaData: {}, 
+
     };
   },
-  async created() {
-    let res = await this.$axios.get("goods", {
-      params: {
-        query: "",
-        pagenum: 1,
-        pagesize: 10
-      }
-    });
-    this.goodsdata = res.data.data.goods;
-    console.log(res);
+  created() {
+      this.getGoods();
   },
   methods: {
+    //   查询商品的函数
+    async getGoods() {
+      let res = await this.$axios.get("goods", {
+        params: {
+          query: this.inputContent,
+          pagenum: 1,
+          pagesize: 10
+        }
+      });
+      this.goodsdata = res.data.data.goods;
+      console.log(res);
+    },
     // 搜索商品的函数
-    searchUsers() {},
+    searchUsers() {
+        if(this.inputContent == ''){
+             this.$message('搜索的内容不能够为空呀亲！');
+        }else{
+             this.getGoods();
+        }
+    },
     // 编辑商品的函数
     editGooda() {},
     // 删除商品的函数
-    deleteGoodb() {},
+    deleteGoodb(res) {
+        this.deleteGoodsa = true;
+        this.goodsaData = res;
+        console.log(res);
+      
+    },
+    async deleteGoodss () {
+        let res = await this.$axios.delete(`goods/${this.goodsaData.goods_id}`);
+        this.deleteGoodsa = false;
+        if (res.data.meta.msg === '删除成功') {
+            this.getGoods();
+        }
+    },
     // 分页器的相关的函数
     handleSizeChange() {},
     handleCurrentChange() {},
