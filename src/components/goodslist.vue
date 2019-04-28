@@ -12,7 +12,7 @@
           <el-input placeholder="请输入内容" class="input-with-select" v-model="inputContent">
             <el-button slot="append" icon="el-icon-search" @click="searchUsers"></el-button>
           </el-input>
-          <el-button type="success" plain>添加商品</el-button>
+          <el-button type="success" plain @click="addGoodsa">添加商品</el-button>
         </div>
         <!-- 表格 -->
         <el-table :data="goodsdata" style="width: 100%" border>
@@ -90,6 +90,10 @@ export default {
       this.getGoods();
   },
   methods: {
+    //   增加商品的函数
+    addGoodsa () {
+        this.$router.push('addGoods');
+    },
     //   查询商品的函数
     async getGoods() {
       let res = await this.$axios.get("goods", {

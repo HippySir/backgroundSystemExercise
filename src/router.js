@@ -17,6 +17,7 @@ import orderlist from "./components/orderlist.vue"     //引入订单列表
 import datalist from "./components/datareport.vue"     //引入数据报表
 import rolelist from "./components/rolelist.vue"       //引入角色列表
 import permission from "./components/permission.vue"   //引入权限管理列表
+import addGoods from "./components/addGoods.vue"       //引入增加商品的组件
 
 let routes = [
   {
@@ -31,6 +32,10 @@ let routes = [
       {
         path: 'users',
         component: users,
+      },
+      {
+        path: 'addGoods',
+        component: addGoods,
       },
       {
         path: 'goods',

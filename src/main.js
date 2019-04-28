@@ -6,6 +6,13 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
+// 引入富文本域
+import VueQuillEditor from 'vue-quill-editor'
+Vue.use(VueQuillEditor)
+import 'quill/dist/quill.core.css' 
+import 'quill/dist/quill.snow.css' 
+import 'quill/dist/quill.bubble.css'
+
 // 导入axios
 import axios from './assets/js/http.js'
 Vue.use(axios)
