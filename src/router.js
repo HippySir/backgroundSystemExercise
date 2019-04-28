@@ -18,11 +18,11 @@ import datalist from "./components/datareport.vue"     //引入数据报表
 import rolelist from "./components/rolelist.vue"       //引入角色列表
 import permission from "./components/permission.vue"   //引入权限管理列表
 
-
 let routes = [
   {
     path: "/login",
-    component: login
+    component: login,
+    meta: { islogin: true }
   },
   {
     path: "/",
@@ -72,5 +72,21 @@ let routes = [
 let router = new VueRouter({
   routes
 });
+
+// 设置导航的前置守卫
+router.beforeEach((to, from, next) => {
+  if(to.meta.islogin === true){
+    next();
+  }else{
+    if(window.sessionStorage.getItem('token')){
+      next();
+    }else{
+      next('/login');
+    }
+  }
+ 
+  
+  // ...
+})
 
 export default router;

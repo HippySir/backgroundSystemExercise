@@ -62,19 +62,9 @@ export default {
     }
   },
  async created() {
-    // 在这里验证浏览器有没有token
-    if (!sessionStorage.getItem("token")) {
-      this.$router.push({path:'/login'});
-      this.$message.error('请先登录！');
-      return false;
-    }else{
-        this.$axios.defaults.headers.common['Authorization'] = sessionStorage.getItem('token');
-    }
-
     // 发送请求获取权限列表数据来渲染左侧菜单
     let res = await this.$axios.get('menus');
     this.listPermission = res.data.data;
-    console.log(res);
   }
 };
 </script>
