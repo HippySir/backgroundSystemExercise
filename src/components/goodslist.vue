@@ -49,9 +49,9 @@
           @current-change="handleCurrentChange"
           :current-page="1"
           :page-sizes="[5, 10, 15, 20]"
-          :page-size="1"
+          :page-size="pagesize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="1"
+          :total="goodsTotal"
         ></el-pagination>
       </el-footer>
     </el-container>
@@ -81,6 +81,8 @@ export default {
        pagesize: 10,
     //存储相关商品的信息
       goodsaData: {}, 
+    // 分页器的相关的数据
+      goodsTotal: 0,
 
     };
   },
@@ -93,12 +95,13 @@ export default {
       let res = await this.$axios.get("goods", {
         params: {
           query: this.inputContent,
-          pagenum: 1,
-          pagesize: 10
+          pagenum: this.pagenum,
+          pagesize: this.pagesize,
         }
       });
       this.goodsdata = res.data.data.goods;
       console.log(res);
+      this.goodsTotal = res.data.data.total;
     },
     // 搜索商品的函数
     searchUsers() {
@@ -125,8 +128,15 @@ export default {
         }
     },
     // 分页器的相关的函数
-    handleSizeChange() {},
-    handleCurrentChange() {},
+    handleSizeChange(res) {
+        this.pagesize = res;
+        this. getGoods() ;
+
+    },
+    handleCurrentChange(res) {
+       this.pagenum = res;
+       this. getGoods() ;
+    },
     // 删除框的相关函数
     deleteUsers() {}
   }
