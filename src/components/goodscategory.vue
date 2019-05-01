@@ -4,7 +4,7 @@
       <breadcrums :itema="'商品管理'" :itemb="'商品分类'"></breadcrums>
     </div>
     <div class="addbutton">
-      <el-button @click="addDialog = true">添加分类</el-button>
+      <el-button @click="addGoodsCategory">添加分类</el-button>
     </div>
     <template>
       <el-table :data="goodsData" style="width: 100%" border>
@@ -13,29 +13,29 @@
             <el-table :data="scope.row.children" style="width: 100%" :show-header="false">
               <el-table-column type="expand">
                 <template slot-scope="scopes" class="numba">
-                    <el-table :data="scopes.row.children" style="width: 100%"  :show-header="false">
-                      <el-table-column prop="cat_name"></el-table-column>
-                      <el-table-column prop="level"></el-table-column>
-                      <el-table-column prop="isValid"></el-table-column>
-                      <el-table-column>
-                        <template slot-scope="scope">
-                          <!-- 商品分类编辑按钮 -->
-                          <el-button
-                            type="primary"
-                            icon="el-icon-edit"
-                            size="mini"
-                            @click="editRolesa(scope.row)"
-                          ></el-button>
-                          <!-- 商品删除按钮 -->
-                          <el-button
-                            type="danger"
-                            icon="el-icon-delete"
-                            size="mini"
-                            @click="isDelete(scope.row)"
-                          ></el-button>
-                        </template>
-                      </el-table-column>
-                    </el-table>
+                  <el-table :data="scopes.row.children" style="width: 100%" :show-header="false">
+                    <el-table-column prop="cat_name"></el-table-column>
+                    <el-table-column prop="level"></el-table-column>
+                    <el-table-column prop="isValid"></el-table-column>
+                    <el-table-column>
+                      <template slot-scope="scope">
+                        <!-- 商品分类编辑按钮 -->
+                        <el-button
+                          type="primary"
+                          icon="el-icon-edit"
+                          size="mini"
+                          @click="editRolesa(scope.row)"
+                        ></el-button>
+                        <!-- 商品删除按钮 -->
+                        <el-button
+                          type="danger"
+                          icon="el-icon-delete"
+                          size="mini"
+                          @click="isDelete(scope.row)"
+                        ></el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
                 </template>
               </el-table-column>
               <el-table-column prop="cat_name"></el-table-column>
@@ -98,7 +98,12 @@
         </el-form-item>
         <el-form-item label="分类名称" label-width="120px" prop="describe">
           <!-- 弹出框的级联菜单 -->
-          <el-cascader :options="addOptions" v-model="selectedOptions" @change="handleChange"></el-cascader>
+          <el-cascader
+            :options="cascadeData"
+            v-model="selectedOptions"
+            @change="handleChange"
+            :props="propa"
+          ></el-cascader>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -135,9 +140,14 @@ export default {
       // 添加分类的弹出框的相关数据
       addForm: {},
       addDialog: false,
-      addOptions: {},
-      selectedOptions: {},
+      selectedOptions: [],
       roleData: [],
+      cascadeData: [],
+      propa: {
+        children: "children",
+        value: "cat_id",
+        label: "cat_name"
+      },
       //表格里面商品相关的数据
       goodsData: {},
       // 编辑商品分类的相关的数据
@@ -148,13 +158,49 @@ export default {
       //  分页器的相关的数据
       totalCatedgory: 0,
       pageSize: 5,
-      currentPage: 1
+      currentPage: 1,
+      ida: 0,
     };
   },
   created() {
     this.getGoodsData();
   },
   methods: {
+    // 添加商品分类的函数
+    async addGoodsCategory() {
+      this.addDialog = true;
+      let res = await this.$axios.get("categories", {
+        params: {
+          type: [2]
+        }
+      });
+      this.cascadeData = res.data.data;
+      console.log(res.data.data);
+    },
+
+    // 将处理级联数据的代码封装成为一个函数
+    cascadeMethod(res, id) {
+      //  console.log(arr);
+      var ida = 0;
+      for (var i = 0; i < res.length - 1; i++) {
+        console.log(res[i].cat_id,id);
+
+        if (res[i].cat_id === id) {
+          console.log(res[i].cat_level,'ni');
+          this.ida = res[i].cat_level;
+          return;
+         
+         
+        }
+
+        if (res[i].children) {
+          this.cascadeMethod(res[i].children, id);
+        }
+      }
+     
+    
+    },
+
     //将获取商品分类数据的代码封装成为一个函数
     async getGoodsData() {
       let res = await this.$axios.get("categories", {
@@ -164,7 +210,7 @@ export default {
           pagesize: this.pageSize
         }
       });
-      console.log(res);
+      // console.log(res);
       this.processingData(res.data.data.result);
       this.goodsData = res.data.data.result;
       console.log(this.goodsData);
@@ -193,7 +239,17 @@ export default {
     },
 
     //添加商品分类的级联菜单的相关的函数
-    handleChange() {},
+   async handleChange(res) {
+    
+     this.cascadeMethod(this.cascadeData, res[res.length - 1]);
+      console.log(this.ida);
+      let resba = await this.$axios.post('categories',{
+        cat_pid: res[res.length-1],
+        cat_name: this.addForm.username,
+        cat_level: this.ida+1,
+      });
+      console.log(resba);
+    },
     // 编辑的函数
     editRolesa() {},
     // 删除的有关函数
@@ -231,7 +287,6 @@ export default {
   }
   .el-table__expanded-cell {
     padding: 0;
-    
   }
 }
 </style>
