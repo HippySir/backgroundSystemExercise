@@ -151,7 +151,9 @@ export default {
       //表格里面商品相关的数据
       goodsData: {},
       // 编辑商品分类的相关的数据
-      editForm: {},
+      editForm: {
+        username: ""
+      },
       editDialog: false,
       //删除分类的相关参数
       deleteVisible: false,
@@ -160,12 +162,26 @@ export default {
       pageSize: 5,
       currentPage: 1,
       ida: 0,
+      catageryData: {}
     };
   },
   created() {
     this.getGoodsData();
   },
   methods: {
+    // 添加分类的确认函数
+    async addRole() {
+      let resba = await this.$axios.post("categories", {
+        cat_pid: this.res[this.res.length - 1],
+        cat_name: this.addForm.username,
+        cat_level: this.ida + 1
+      });
+      this.addDialog = false;
+      if(resa.data.meta.msg === "创建成功"){
+        this.getGoodsData();
+      }
+      console.log(resba);
+    },
     // 添加商品分类的函数
     async addGoodsCategory() {
       this.addDialog = true;
@@ -183,22 +199,15 @@ export default {
       //  console.log(arr);
       var ida = 0;
       for (var i = 0; i < res.length - 1; i++) {
-        console.log(res[i].cat_id,id);
-
         if (res[i].cat_id === id) {
-          console.log(res[i].cat_level,'ni');
+          console.log(res[i].cat_level, "ni");
           this.ida = res[i].cat_level;
           return;
-         
-         
         }
-
-        if (res[i].children) {
+        if (res[i].children && numas === false) {
           this.cascadeMethod(res[i].children, id);
         }
       }
-     
-    
     },
 
     //将获取商品分类数据的代码封装成为一个函数
@@ -239,23 +248,47 @@ export default {
     },
 
     //添加商品分类的级联菜单的相关的函数
-   async handleChange(res) {
-    
-     this.cascadeMethod(this.cascadeData, res[res.length - 1]);
+    handleChange(res) {
+      this.res = res;
+      this.cascadeMethod(this.cascadeData, res[res.length - 1]);
       console.log(this.ida);
-      let resba = await this.$axios.post('categories',{
-        cat_pid: res[res.length-1],
-        cat_name: this.addForm.username,
-        cat_level: this.ida+1,
-      });
-      console.log(resba);
     },
     // 编辑的函数
-    editRolesa() {},
+    editRolesa(res) {
+      this.editDialog = true;
+      this.editForm.username = res.cat_name;
+      //  console.log(resaba);
+      this.catageryData = res;
+    },
+    async editRole() {
+      let resa = await this.$axios.put(
+        `categories/${this.catageryData.cat_id}`,
+        {
+          cat_name: this.editForm.username
+        }
+      );
+      console.log(resa);
+      if (resa.data.meta.msg === "更新成功") {
+        this.getGoodsData();
+      }
+      this.editDialog = false;
+    },
     // 删除的有关函数
-    isDelete() {},
+    isDelete(res) {
+      this.deleteVisible = true;
+      this.catageryData = res;
+    },
     //删除分类弹出框的有关的函数
-    suretoDelete() {},
+    async suretoDelete() {
+      let resa = await this.$axios.delete(
+        `categories/${this.catageryData.cat_id}`
+      );
+      console.log(resa);
+      if (resa.data.meta.msg === "删除成功") {
+        this.getGoodsData();
+      }
+      this.deleteVisible = false;
+    },
     //分页器相关的函数
     handleSizeChange(res) {
       this.pageSize = res;
