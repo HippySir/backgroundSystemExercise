@@ -1,7 +1,7 @@
 <template>
   <div class="orderlist">
     <!-- 顶部导航栏 -->
-    <div class="orderList">
+    <div class="orderListd">
       <breadcrums :itema="'订单管理'" :itemb="'订单列表'"></breadcrums>
     </div>
     <!--中间表格 -->
@@ -128,5 +128,14 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less">
+    .orderlist {
+        .orderListd {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            background-color: #d3dce6;
+            padding-left: 15px;
+        }
+    }
 </style>
